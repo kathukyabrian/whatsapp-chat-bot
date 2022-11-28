@@ -1,0 +1,11 @@
+version: "2"
+services:
+  notify:
+    image: kitunda/whatsapp-chatbot:latest
+    ports:
+      - 3001:3001
+    environment:
+      - JVM_OPTS=-Xmx128m -Xms128m
+      - APPLICATION_VERIFICATION_TOKEN=thisisjustatest
+      - "TZ=Africa/Nairobi"
+    restart: on-failure
