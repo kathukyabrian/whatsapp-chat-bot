@@ -1,11 +1,19 @@
 version: "2"
 services:
-  notify:
+  chatbot:
     image: kitunda/whatsapp-chatbot:latest
     ports:
       - 3001:3001
     environment:
       - JVM_OPTS=-Xmx128m -Xms128m
       - APPLICATION_VERIFICATION_TOKEN=thisisjustatest
+      - APPLICATION_APP_ID=1157848321819677
+      - APPLICATION_APP_SECRET=63debda5074fd4b4fa09afc34b24dcca
+      - APPLICATION_PHONE_NUMBER_ID=106782102249299
+      - APPLICATION_BUSINESS_ACCOUNT_ID=107642578828547
+      - APPLICATION_ACCESS_TOKEN=EAAQdDpHtBB0BAJsgiZC7DsvO0urHXWT0vqKYKOJpjAgCp43r7nZCRTgE0OLxrt7Mb5gXD41rDrZCw6mJJHOo9RACjjG2s1V3xn2hkfgRoK8FZAOzrnryglnpwjShbv2ApH9vfypI23Hr9YkkLfPAC3atmux57CzSgemGFCiFgVtx4u7T1F5wmOfG0G1vZCUux5LBwmxnLQwxL1fLcuhfJ
+      - APPLICATION_VERSION=v15.0
+      - APPLICATION_TEMPLATE_NAME_PREFIX=mkt
+      - APPLICATION_BASE_URL=https://graph.facebook.com/
       - "TZ=Africa/Nairobi"
     restart: on-failure

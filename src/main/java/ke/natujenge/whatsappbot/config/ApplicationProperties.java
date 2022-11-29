@@ -14,4 +14,6 @@ public class ApplicationProperties {
     private String version;
     private String templateNamePrefix;
     private String verificationToken;
+    private String baseUrl;
+    private String phoneNumber;
 }

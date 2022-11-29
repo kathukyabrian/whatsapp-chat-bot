@@ -2,38 +2,37 @@ package ke.natujenge.whatsappbot.web.rest;
 
 import ke.natujenge.whatsappbot.config.ApplicationProperties;
 import ke.natujenge.whatsappbot.dto.CallbackDTO;
-import ke.natujenge.whatsappbot.dto.Change;
 import ke.natujenge.whatsappbot.dto.Message;
-import ke.natujenge.whatsappbot.dto.Value;
+import ke.natujenge.whatsappbot.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
 @RequestMapping("/webhook")
 public class CallbackResource {
 
-    private ApplicationProperties applicationProperties;
+    private final ApplicationProperties applicationProperties;
+
+    private final MessageService messageService;
+
+    public CallbackResource(ApplicationProperties applicationProperties, MessageService messageService) {
+        this.applicationProperties = applicationProperties;
+        this.messageService = messageService;
+    }
+
 
     @PostMapping
-    public void processCallback(@RequestBody Map<Object, Object> callbackDTO) {
+    public void processCallback(@RequestBody CallbackDTO callbackDTO) {
         log.debug("Received callback from whatsapp cloud : {}", callbackDTO);
 
+        // retrieve messages
+        List<Message> messages = callbackDTO.getEntry().get(0).getChanges().get(0).getValue().getMessages();
 
-        // resolve phone number (sender)
-        Change change = ((List<Change>) callbackDTO.get("entry")).get(0);
-
-        Value value = change.getValue();
-
-        List<Message> messages = value.getMessages();
-        log.debug("Retrieved messages : {}", messages);
-        // eg hi, a way of responding
-
-        // push to service for response creation
-
+        // schedule it to service for processing
+        messageService.processMessages(messages);
 
     }
 
@@ -43,7 +42,7 @@ public class CallbackResource {
         String resolvedChallenge = "";
 //        String verificationToken = applicationProperties.getVerificationToken();
         if (mode != null && verifyToken != null) {
-            if (mode.equals("subscribe") && verifyToken.equals("thisisjustatest")) {
+            if (mode.equals("subscribe") && verifyToken.equals(applicationProperties.getVerificationToken())) {
                 log.debug("Webhook verified");
                 resolvedChallenge = challenge;
             }
