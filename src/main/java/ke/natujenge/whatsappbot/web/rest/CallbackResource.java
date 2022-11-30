@@ -32,7 +32,9 @@ public class CallbackResource {
         List<Message> messages = callbackDTO.getEntry().get(0).getChanges().get(0).getValue().getMessages();
 
         // schedule it to service for processing
-        messageService.processMessages(messages);
+        if(messages != null && !messages.isEmpty()) {
+            messageService.processMessages(messages);
+        }
 
     }
 

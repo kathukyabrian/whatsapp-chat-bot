@@ -87,7 +87,6 @@ public class MessageService {
 
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Authorization", "Bearer " + applicationProperties.getAccessToken());
-        headerMap.put("Content-Type", "application/json");
 
         log.debug("about to send message to endpoint : {} message : {} with headers : {}",endpoint, message, headerMap);
 
@@ -102,7 +101,7 @@ public class MessageService {
         if (textMessage.contains("hi")) {
             return "hello_world";
         } else if (textMessage.contains("jumba")) {
-            return "sample_happy_hour_announcement";
+            return "hello_jumba";
         } else if (textMessage.contains("flight")) {
             return "sample_flight_confirmation";
         } else if (textMessage.contains("issue")) {

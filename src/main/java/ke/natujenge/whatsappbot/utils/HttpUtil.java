@@ -25,8 +25,10 @@ public class HttpUtil {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader(name, value)
+                .addHeader("Content-Type", "application/json")
                 .post(requestBody)
                 .build();
+
 
 
         log.debug("Headers {}", request.headers());
