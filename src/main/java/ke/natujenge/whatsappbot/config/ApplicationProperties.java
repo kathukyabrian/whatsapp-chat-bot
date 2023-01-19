@@ -16,4 +16,6 @@ public class ApplicationProperties {
     private String verificationToken;
     private String baseUrl;
     private String phoneNumber;
+    private String oauthToken;
+    private String jumbaProductsUrl;
 }

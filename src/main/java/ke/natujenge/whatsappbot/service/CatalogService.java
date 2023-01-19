@@ -1,28 +1,64 @@
 package ke.natujenge.whatsappbot.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ke.natujenge.whatsappbot.config.ApplicationProperties;
 import ke.natujenge.whatsappbot.domain.Product;
+import ke.natujenge.whatsappbot.dto.ProductDTO;
+import ke.natujenge.whatsappbot.dto.ProductItem;
+import ke.natujenge.whatsappbot.utils.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class CatalogService {
 
-    public List<Product> getCatalog() {
-        List<Product> products = new ArrayList<>();
-        Product product = new Product(1, "Emerald Blue Ceramic Tiles", 1151.0);
-        Product product1 = new Product(2, "Rustico Ash Ceramic Tiles", 1295.0);
-        Product product2 = new Product(3, "Marmo Antico Ceramic Wall Tiles", 1243.50);
-        Product product3 = new Product(4, "Marmola Ice Ceramic", 1741.82);
+    private final ApplicationProperties applicationProperties;
 
-        products.add(product);
-        products.add(product1);
-        products.add(product2);
-        products.add(product3);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-        return products;
+    public CatalogService(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
+
+    public List<ProductItem> getCatalog() {
+        // make an api call
+
+        // request
+        /**
+         * {
+         *   "query": "query ListProducts{ listProducts { items { id product_name status }}}"
+         * }
+         */
+
+        String query = "query ListProducts{ listProducts { items { id product_name status }}}";
+        log.debug("Query : {}", query);
+
+        Map<String, String> request = new HashMap<>();
+        request.put("query", query);
+        log.debug("Json query : {}", query);
+
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put("Authorization", "Bearer " + applicationProperties.getOauthToken());
+
+        try {
+            String jsonRequest = objectMapper.writeValueAsString(request);
+            String response = HttpUtil.post(applicationProperties.getJumbaProductsUrl(), jsonRequest, headerMap,  MediaType.get("application/json; charset=utf-8"));
+            ProductDTO productDTO = objectMapper.readValue(response, ProductDTO.class);
+            return productDTO.getData().getListProducts().getItems();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }

@@ -1,10 +1,9 @@
 package ke.natujenge.whatsappbot.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.natujenge.whatsappbot.config.ApplicationProperties;
-import ke.natujenge.whatsappbot.domain.Product;
 import ke.natujenge.whatsappbot.dto.Message;
+import ke.natujenge.whatsappbot.dto.ProductItem;
 import ke.natujenge.whatsappbot.dto.Template;
 import ke.natujenge.whatsappbot.utils.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -165,10 +164,10 @@ public class MessageService {
             body = "Thank you for reaching out. We shall get back to you within 12 hours.\n" +
                     "For more, please call +254 797 749 757 or email : info@thejumba.com";
         } else if (textMessage.contains("catalog")) {
-            List<Product> products = catalogService.getCatalog();
+            List<ProductItem> products = catalogService.getCatalog();
 
-            for (Product product : products) {
-                body += product.getId() + "." + " " + product.getName() + " - KES " + product.getPrice() + "\n";
+            for (ProductItem product : products) {
+                body += product.getId() + "." + " " + product.getProductName() + "\n";
             }
         } else if (textMessage.contains("help")) {
             body = "*jumba* - greetings\n" +
