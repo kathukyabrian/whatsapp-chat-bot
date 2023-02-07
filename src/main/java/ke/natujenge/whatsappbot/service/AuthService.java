@@ -15,9 +15,9 @@ public class AuthService {
 
     @PostConstruct
     void setup() {
-        users.put("+254720076731", new CustomerProfile("1", "+254720076731", "Martin", "test@mnt.dev"));
-        users.put("+254740272915", new CustomerProfile("2", "+254740272915", "Brian", "test@brian.dev"));
-        users.put("+254703536688", new CustomerProfile("3", "+254703536688", "Waithaka", "test@weshy.dev"));
+        users.put("254720076731", new CustomerProfile("1", "+254720076731", "Martin", "test@mnt.dev"));
+        users.put("254740272915", new CustomerProfile("2", "+254740272915", "Brian", "test@brian.dev"));
+        users.put("254703536688", new CustomerProfile("3", "+254703536688", "Waithaka", "test@weshy.dev"));
     }
 
     public CustomerProfile getUser(String phoneNumber) {

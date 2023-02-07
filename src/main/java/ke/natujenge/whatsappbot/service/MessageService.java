@@ -186,7 +186,7 @@ public class MessageService {
                     "*payment* - to get payment info\n" +
                     "*catalog* - to view available products\n" +
                     "*exit* - to end the conversation";
-        }else if(textMessage.startsWith("addtocart")) {
+        } else if (textMessage.startsWith("addtocart")) {
             // Split text message addtocart, id
             String id = textMessage.split(" ")[1];
             // Query the product
@@ -194,15 +194,16 @@ public class MessageService {
             CartItem item = new CartItem(id, name, 10);
 
             try {
+                Cart cart = null;
                 if (customerProfile != null) {
-                    cartService.addToCart(customerProfile.getPhoneNo(), item);
+                    cart = cartService.addToCart(customerProfile.getPhoneNo(), item);
                 }
-                body = "Cart updated successfully";
+                body = "Cart updated successfully, " + cart.toString();
 
             } catch (Exception exception) {
                 body = "Something went wrong";
             }
-        } else if (textMessage.contains("cart")){
+        } else if (textMessage.contains("cart")) {
             Cart cart = null;
             if (customerProfile != null) {
                 cart = cartService.getCart(customerProfile.getPhoneNo());
