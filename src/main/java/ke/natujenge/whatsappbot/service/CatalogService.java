@@ -3,7 +3,6 @@ package ke.natujenge.whatsappbot.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.natujenge.whatsappbot.config.ApplicationProperties;
-import ke.natujenge.whatsappbot.domain.Product;
 import ke.natujenge.whatsappbot.dto.ProductDTO;
 import ke.natujenge.whatsappbot.dto.ProductItem;
 import ke.natujenge.whatsappbot.utils.HttpUtil;
@@ -60,5 +59,9 @@ public class CatalogService {
         }
 
 
+    }
+
+    public String queryProduct(String id) {
+        return "DummyCement";
     }
 }

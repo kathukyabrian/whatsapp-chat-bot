@@ -2,6 +2,9 @@ package ke.natujenge.whatsappbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.natujenge.whatsappbot.config.ApplicationProperties;
+import ke.natujenge.whatsappbot.domain.Cart;
+import ke.natujenge.whatsappbot.domain.CartItem;
+import ke.natujenge.whatsappbot.dto.CustomerProfile;
 import ke.natujenge.whatsappbot.dto.Message;
 import ke.natujenge.whatsappbot.dto.ProductItem;
 import ke.natujenge.whatsappbot.dto.Template;
@@ -22,13 +25,17 @@ public class MessageService {
     private final ApplicationProperties applicationProperties;
     private final TemplateService templateService;
     private final CatalogService catalogService;
+    private final AuthService authService;
+    private final CartService cartService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public MessageService(ApplicationProperties applicationProperties, TemplateService templateService, CatalogService catalogService) {
+    public MessageService(ApplicationProperties applicationProperties, TemplateService templateService, CatalogService catalogService, AuthService authService, CartService cartService) {
         this.applicationProperties = applicationProperties;
         this.templateService = templateService;
         this.catalogService = catalogService;
+        this.authService = authService;
+        this.cartService = cartService;
     }
 
     public void processMessages(List<Message> messages) {
@@ -44,16 +51,18 @@ public class MessageService {
             // resolve phoneNumber
             String phoneNumber = message.getFrom();
 
+            CustomerProfile customerProfile = authService.getUser(phoneNumber);
+
             try {
-                replyPlainText(textMessage, phoneNumber);
+                replyPlainText(textMessage, phoneNumber, customerProfile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    private void replyPlainText(String textMessage, String phoneNumber) throws IOException {
-        Map<String, Object> message = prepareMessage(textMessage, phoneNumber);
+    private void replyPlainText(String textMessage, String phoneNumber, CustomerProfile customerProfile) throws IOException {
+        Map<String, Object> message = prepareMessage(textMessage, phoneNumber, customerProfile);
 
         String endpoint = applicationProperties.getBaseUrl()
                 + applicationProperties.getVersion() + "/"
@@ -137,7 +146,7 @@ public class MessageService {
         return "hello_world";
     }
 
-    public Map<String, Object> prepareMessage(String textMessage, String phoneNumber) {
+    public Map<String, Object> prepareMessage(String textMessage, String phoneNumber, CustomerProfile customerProfile) {
         Map<String, Object> message = new HashMap<>();
         message.put("messaging_product", "whatsapp");
         message.put("recipient_type", "individual");
@@ -177,6 +186,30 @@ public class MessageService {
                     "*payment* - to get payment info\n" +
                     "*catalog* - to view available products\n" +
                     "*exit* - to end the conversation";
+        }else if(textMessage.startsWith("addtocart")) {
+            // Split text message addtocart, id
+            String id = textMessage.split(" ")[1];
+            // Query the product
+            String name = catalogService.queryProduct(id);
+            CartItem item = new CartItem(id, name, 10);
+
+            try {
+                if (customerProfile != null) {
+                    cartService.addToCart(customerProfile.getPhoneNo(), item);
+                }
+                body = "Cart updated successfully";
+
+            } catch (Exception exception) {
+                body = "Something went wrong";
+            }
+        } else if (textMessage.contains("cart")){
+            Cart cart = null;
+            if (customerProfile != null) {
+                cart = cartService.getCart(customerProfile.getPhoneNo());
+            }
+
+            body = cart != null ? cart.toString() : "Cart is empty";
+
         } else {
             body = "That's new to me, I only recognize one of the following commands.\n" +
                     "*jumba* - greetings\n" +
